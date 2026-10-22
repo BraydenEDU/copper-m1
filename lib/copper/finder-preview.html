@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Find Your Copper</title>
+<style>
+:root{--bg:#1b1a24;--card:#26242f;--copper:#c8794a;--teal:#3f8f8a;--sand:#e9d9c0;--text:#f4ece2;--muted:#b3a99c}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 30% 0%,#3a2a24,var(--bg) 60%);color:var(--text);font:16px/1.5 system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px}
+.card{background:var(--card);border:1px solid #3a3642;border-radius:20px;max-width:520px;width:100%;padding:32px;box-shadow:0 20px 60px #0006}
+h1{margin:0;font-size:28px;color:var(--copper)}.sub{color:var(--muted);margin:4px 0 24px}
+.bar{height:6px;background:#3a3642;border-radius:3px;margin-bottom:24px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--copper),var(--teal));transition:width .3s}
+h2{font-size:20px;margin:0 0 16px}
+button.opt{display:block;width:100%;text-align:left;background:#1f1d27;color:var(--text);border:1px solid #3a3642;border-radius:12px;padding:14px 16px;margin-bottom:10px;font:inherit;cursor:pointer;transition:.15s}
+button.opt:hover{border-color:var(--copper);transform:translateX(4px)}
+.res h2{font-size:24px;color:var(--sand)}.price{color:var(--copper);font-weight:600}.plan{margin-top:16px;padding:14px;border-radius:12px;background:#1f1d27;border-left:4px solid var(--teal)}
+.again{margin-top:20px;background:var(--copper);color:#1b1a24;border:0;border-radius:999px;padding:10px 20px;font:inherit;font-weight:600;cursor:pointer}
+</style></head><body>
+<div class="card"><h1 id="t"></h1><p class="sub" id="s"></p><div class="bar"><i id="b"></i></div><div id="app"></div></div>
+<script>
+const DATA={products:[{id:"copper-home",name:"Copper Home",priceUsd:149},{id:"copper-notes",name:"Copper Notes",priceUsd:129}],
+plans:[{id:"free",name:"Free",monthlyUsd:0,memoryDays:30,notesHoursPerMonth:"10"},{id:"copper-plus",name:"Copper Plus",monthlyUsd:7.99,annualUsd:79,memoryDays:365,notesHoursPerMonth:"Unlimited"}],
+finder:{title:"Find Your Copper",subtitle:"Three quick questions. One perfect match.",questions:[
+{prompt:"Where do you need a hand most?",options:[{label:"Around the house",scores:{"copper-home":2}},{label:"In meetings or class",scores:{"copper-notes":2}},{label:"Honestly, both",scores:{"copper-home":1,"copper-notes":1}}]},
+{prompt:"Which sounds most like you?",options:[{label:"I forget when the pool guy is coming",scores:{"copper-home":2}},{label:"My sprinklers run during monsoon storms",scores:{"copper-home":2}},{label:"I never catch the action items",scores:{"copper-notes":2}},{label:"My lecture notes are a mess",scores:{"copper-notes":2}}]},
+{prompt:"How much will you lean on it?",options:[{label:"A little, here and there",plan:"free"},{label:"Every day, and I want it to remember all year",plan:"copper-plus"}]}],
+results:{"copper-home":{headline:"You're a Copper Home person.",blurb:"Let it run the lights, mind the sprinklers and remember the little things, so you don't have to."},"copper-notes":{headline:"You're a Copper Notes person.",blurb:"Clip it on, hear the chime, and walk out with the summary, decisions and action items."},both:{headline:"Why not both?",blurb:"Copper Home keeps the house in order and Copper Notes keeps your meetings and lectures in order. They share one Copper app."}},tieBreaker:"both"}};
+const F=DATA.finder,app=document.getElementById('app'),bar=document.getElementById('b');
+document.getElementById('t').textContent=F.title;document.getElementById('s').textContent=F.subtitle;
+let step,scores,plan;
+function start(){step=0;scores={"copper-home":0,"copper-notes":0};plan="free";render()}
+function render(){bar.style.width=(step/F.questions.length*100)+'%';
+ if(step>=F.questions.length)return result();
+ const q=F.questions[step];app.innerHTML='<h2>'+q.prompt+'</h2>';
+ q.options.forEach(o=>{const b=document.createElement('button');b.className='opt';b.textContent=o.label;
+  b.onclick=()=>{for(const k in o.scores||{})scores[k]+=o.scores[k];if(o.plan)plan=o.plan;step++;render()};app.appendChild(b)})}
+function result(){const h=scores["copper-home"],n=scores["copper-notes"];const key=h===n?F.tieBreaker:(h>n?"copper-home":"copper-notes");
+ const r=F.results[key],p=DATA.plans.find(x=>x.id===plan);
+ const prods=key==="both"?DATA.products:DATA.products.filter(x=>x.id===key);
+ const price=prods.map(x=>x.name+' <span class="price">$'+x.priceUsd+'</span>').join(' + ');
+ const planTxt=p.id==="free"?'<b>Free plan</b>: '+p.memoryDays+' days of memory, '+p.notesHoursPerMonth+' hours of notes a month.':'<b>Copper Plus</b>: $'+p.monthlyUsd+'/mo or $'+p.annualUsd+'/yr. '+p.memoryDays+' days of memory, '+p.notesHoursPerMonth.toLowerCase()+' notes, refined answers.';
+ app.innerHTML='<div class="res"><h2>'+r.headline+'</h2><p>'+r.blurb+'</p><p>'+price+'</p><div class="plan">'+planTxt+'</div><button class="again">Start over</button></div>';
+ app.querySelector('.again').onclick=start}
+start();
+</script></body></html>
