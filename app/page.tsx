@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { CheckIcon, XIcon } from "lucide-react";
 import { SiteFooter } from "@/components/copper/site-footer";
 import { SiteHeader } from "@/components/copper/site-header";
@@ -133,6 +134,9 @@ export default function Home() {
                       </Badge>
                     ))}
                   </div>
+                  <Button asChild variant="outline">
+                    <Link href={`/products/${product.id}`}>View details</Link>
+                  </Button>
                 </CardContent>
               </Card>
             ))}

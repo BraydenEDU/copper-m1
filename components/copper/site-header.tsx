@@ -3,9 +3,9 @@ import { Logo } from "@/components/copper/logo";
 import { ModeToggle } from "@/components/copper/mode-toggle";
 
 const LINKS = [
-  { href: "#products", label: "Products" },
-  { href: "#plus", label: "Copper Plus" },
-  { href: "#privacy", label: "Privacy" },
+  { href: "/#products", label: "Products" },
+  { href: "/#plus", label: "Copper Plus" },
+  { href: "/#privacy", label: "Privacy" },
 ];
 
 export function SiteHeader() {
